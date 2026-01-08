@@ -1,12 +1,15 @@
 # stream
 
-## Visit here!
-https://stream-gcb9ere2fpvw54mk34d7hw.streamlit.app
-
+## Visit here! https://stream-gcb9ere2fpvw54mk34d7hw.streamlit.app
 
 ### Camera classification
 <img width="583" height="981" alt="image" src="https://github.com/user-attachments/assets/382aed3a-6775-4905-bd7e-3687f237f796" />
 
 
 ### multiple images upload classification
-[숫자, 그림 인식asdff.pdf](https://github.com/user-attachments/files/24487829/asdff.pdf)
+
+<img width="565" height="784" alt="image" src="https://github.com/user-attachments/assets/514df8fd-7747-4876-9585-8e312bfee5da" />
+<img width="560" height="781" alt="image" src="https://github.com/user-attachments/assets/815cad42-2174-41cf-b301-20f1abf3e4bd" />
+<img width="559" height="716" alt="image" src="https://github.com/user-attachments/assets/7987d0a0-8b1b-4bd8-b72f-b2996b8903c6" />
+
+
