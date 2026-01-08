@@ -21,12 +21,6 @@ def get_onnx_model():
 
 
 def predict_digit(image_28x28: np.ndarray):
-    """
-    image_28x28:
-        shape = (28, 28)
-        dtype = float32
-        value range = [0, 1]
-    """
     session = get_onnx_model()
 
     # ONNX 입력 형태: (batch, channel, height, width)
@@ -65,20 +59,31 @@ def get_vit_model():
     return processor, model
 
 
-def predict_vit(img, processor, model):
-    inputs = processor(images=img, return_tensors="pt")
+def predict_vit(images, processor, model, top_k=5):
+    if not images:
+        return []
+
+    inputs = processor(images=images, return_tensors="pt")
 
     with torch.no_grad():
         outputs = model(**inputs)
-        probs = torch.softmax(outputs.logits, dim=1)[0]
+        logits = outputs.logits
+        probs = torch.softmax(logits, dim=1)
 
     id2label = model.config.id2label
+    batch_results = []
 
-    results = [
-        {"label": id2label[i], "score": float(probs[i])}
-        for i in range(len(probs))
-    ]
+    for img_probs in probs:
+        topk_probs, topk_indices = torch.topk(img_probs, k=top_k)
 
-    results.sort(key=lambda x: x["score"], reverse=True)
+        results = [
+            {
+                "label": id2label[int(idx)],
+                "score": float(score)
+            }
+            for idx, score in zip(topk_indices, topk_probs)
+        ]
 
-    return results
+        batch_results.append(results)
+
+    return batch_results

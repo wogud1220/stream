@@ -71,7 +71,7 @@ def call_mnist_ui():
 
     if predicted_label is not None and prob_dict is not None:
         st.markdown("---")
-        st.subheader("📊 예측 결과 (전체 화면)")
+        st.subheader("📊 예측 결과")
 
         st.metric("예측 숫자", predicted_label)
 
@@ -82,7 +82,7 @@ def call_mnist_ui():
             ax=ax
         )
 
-        # ✅ 막대 위에 퍼센트 표시
+        # 막대 위에 퍼센트 표시
         for i, v in enumerate(prob_dict.values()):
             plt.text(
                 i,  # x 위치 (막대 index)
@@ -114,15 +114,14 @@ def call_vit_ui():
             value=5)
     with col1:
         st.file_uploader(
-            "이미지를 업로드하세요.",
+            "이미지를 업로드하세요.(png, jpg, jpeg)",
             type=["png", "jpg", "jpeg"],
             key = "uploaded_img",
+            accept_multiple_files=True,
             on_change=set_source_upload
         ) #
     with col2:
-        st.camera_input(label="camera input",
-                                          key = "camera_img",
-                                          on_change=set_source_camera)
+        st.camera_input(label="camera input",key = "camera_img", on_change=set_source_camera)
 
     image_source = None
 
@@ -136,25 +135,38 @@ def call_vit_ui():
         print_result(image_source, top_k)
 
 
-
 def print_result(uploaded, top_k):
-    if uploaded is not None:
-        st.success("업로드 성공")
-        proc, model = get_vit_model()
+    if uploaded is None:
+        st.info("이미지를 업로드해주세요 📤")
+        return
 
-        img = Image.open(uploaded).convert("RGB")
-        st.image(img, width='stretch')
+    if isinstance(uploaded, list) and len(uploaded) == 0:
+        return
 
-        results = predict_vit(img, proc, model)
+    st.success("업로드 성공")
+    proc, model = get_vit_model()
 
-        topk_results = results[:top_k]
-        top1 = topk_results[0]
+    if not isinstance(uploaded, list):
+        uploaded = [uploaded]
+
+    images = [Image.open(f).convert("RGB") for f in uploaded]
+
+    batch_results = predict_vit(
+        images=images,
+        processor=proc,
+        model=model,
+        top_k=top_k
+    )
+
+    for img, results in zip(images, batch_results):
+        top1 = results[0]
         label = top1["label"]
         score = top1["score"]
 
         st.markdown("---")
-        st.subheader("🔍 분류 결과")
+        st.image(img, width="stretch")
 
+        st.subheader("🔍 분류 결과")
         st.success(f"🎯 예측 결과: **{label}**")
         st.metric("신뢰도", f"{score * 100:.1f}%")
         st.progress(score)
@@ -166,9 +178,8 @@ def print_result(uploaded, top_k):
         else:
             st.info("❓ 모델이 확신하지 못했습니다.")
 
-
-        labels = [r["label"] for r in topk_results]
-        scores = [r["score"] * 100 for r in topk_results]
+        labels = [r["label"] for r in results]
+        scores = [r["score"] * 100 for r in results]
 
         fig, ax = plt.subplots(figsize=(8, 4))
         bars = ax.barh(labels, scores)
@@ -190,11 +201,7 @@ def print_result(uploaded, top_k):
             )
 
         ax.grid(axis="x", linestyle="--", alpha=0.6)
-
         st.pyplot(fig)
-
-    else:
-        st.info("이미지를 업로드해주세요 📤")
 
 
 if model_type == "Mnist-onnx":
