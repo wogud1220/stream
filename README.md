@@ -1,12 +1,12 @@
-# stream
+# streamlit
 
 ## Visit here! https://stream-gcb9ere2fpvw54mk34d7hw.streamlit.app
 
-### Camera classification
+## Camera classification
 <img width="583" height="981" alt="image" src="https://github.com/user-attachments/assets/382aed3a-6775-4905-bd7e-3687f237f796" />
 
 
-### multiple images upload classification
+## multiple images upload classification
 
 <img width="565" height="784" alt="image" src="https://github.com/user-attachments/assets/514df8fd-7747-4876-9585-8e312bfee5da" />
 <img width="560" height="781" alt="image" src="https://github.com/user-attachments/assets/815cad42-2174-41cf-b301-20f1abf3e4bd" />
